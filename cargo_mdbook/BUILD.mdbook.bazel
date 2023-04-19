@@ -12,10 +12,7 @@ exports_files([
 rust_binary(
     name = "mdbook_bin",
     srcs = ["src/main.rs"],
-    aliases = aliases(
-        normal = True,
-        proc_macro = True,
-    ),
+    compile_data = glob(["src/**/*.rs"]),
     crate_features = [
         "default",
         "serve",
@@ -28,8 +25,6 @@ rust_binary(
     ),
     version = "0.4.28",
     deps = all_crate_deps(
-        build = True,
-        normal = True,
         proc_macro = True,
     ) + [
         ":mdbook",
@@ -39,16 +34,17 @@ rust_binary(
         "@crate_index_cargo_mdbook//:clap_complete",
         "@crate_index_cargo_mdbook//:env_logger",
         "@crate_index_cargo_mdbook//:opener",
+        "@crate_index_cargo_mdbook//:tokio",
+        "@crate_index_cargo_mdbook//:toml",
+        "@crate_index_cargo_mdbook//:warp",
+        "@crate_index_cargo_mdbook//:futures-util",
+        "@crate_index_cargo_mdbook//:log",
     ],
 )
 
 rust_library(
     name = "mdbook",
     srcs = glob(["src/**/*.rs"]),
-    aliases = aliases(
-        normal = True,
-        proc_macro = True,
-    ),
     compile_data = glob(["**"]),
     crate_features = [
         "default",
@@ -56,7 +52,6 @@ rust_library(
         "search",
     ],
     edition = "2021",
-    proc_macro_deps = all_crate_deps(proc_macro = True),
     version = "0.4.28",
     deps = all_crate_deps(
         build = True,
