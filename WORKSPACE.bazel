@@ -1,0 +1,91 @@
+workspace(name = "examples")
+
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
+
+maybe(
+    http_archive,
+    name = "rules_rust",
+    sha256 = "950a3ad4166ae60c8ccd628d1a8e64396106e7f98361ebe91b0bcfe60d8e4b60",
+    urls = [
+        "https://github.com/bazelbuild/rules_rust/releases/download/0.20.0/rules_rust-v0.20.0.tar.gz",
+    ],
+)
+
+load("@rules_rust//rust:repositories.bzl", "rules_rust_dependencies", "rust_register_toolchains")
+
+rules_rust_dependencies()
+
+rust_register_toolchains(
+    edition = "2018",
+)
+
+load("@rules_rust//crate_universe:repositories.bzl", "crate_universe_dependencies")
+
+crate_universe_dependencies(bootstrap = True)
+
+load("@rules_rust//crate_universe:defs.bzl", "crate", "crates_repository", "splicing_config")
+
+
+###############################################################################
+# C A R G O   R E M O T E
+###############################################################################
+
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+http_archive(
+    name = "names",
+    build_file = "//cargo_remote:BUILD.names.bazel",
+    sha256 = "eab40caca5805624ba31d028913931c3d054b22daafff6f43e3435cfa9fb761e",
+    strip_prefix = "names-0.13.0",
+    urls = ["https://github.com/fnichol/names/archive/refs/tags/v0.13.0.zip"],
+)
+
+crates_repository(
+    name = "crate_index_cargo_remote",
+    cargo_lockfile = "@names//:Cargo.lock",
+    # `generator` is not necessary in official releases.
+    # See load satement for `cargo_bazel_bootstrap`.
+    generator = "@cargo_bazel_bootstrap//:cargo-bazel",
+    manifests = ["@names//:Cargo.toml"],
+)
+
+load(
+    "@crate_index_cargo_remote//:defs.bzl",
+    cargo_remote_crate_repositories = "crate_repositories",
+)
+
+cargo_remote_crate_repositories()
+
+
+# ############# MDBOOK ############### 
+_SHA256 = "3f24b2550d71e87a93f2d4da5f3980d7be6919421ba9aeb368515f14478ecc8a"
+_VERSION = "0.4.28"
+maybe(
+    http_archive,
+    name = "com_github_rust_lang_mdbook",
+    sha256 = _SHA256,
+    urls = [
+        "https://github.com/rust-lang/mdBook/archive/refs/tags/v0.4.28.zip",
+    ],
+    strip_prefix = "mdBook-{version}".format(version = _VERSION),
+    type = "zip",
+    build_file = "//cargo_mdbook:BUILD.mdbook.bazel",
+)
+
+
+crates_repository(
+    name = "crate_index_cargo_mdbook_deps",
+    cargo_lockfile = "@com_github_rust_lang_mdbook//:Cargo.lock",
+    # `generator` is not necessary in official releases.
+    # See load satement for `cargo_bazel_bootstrap`.
+    # generator = "@cargo_bazel_bootstrap//:cargo-bazel",
+    manifests = ["@com_github_rust_lang_mdbook//:Cargo.toml"],
+)
+
+load(
+    "@crate_index_cargo_mdbook_deps//:defs.bzl",
+    cargo_mdbook_crate_repositories = "crate_repositories",
+)
+
+cargo_mdbook_crate_repositories()
