@@ -17,16 +17,28 @@ rust_binary(
         proc_macro = True,
     ),
     crate_features = [
-    #     "application",
-    #     "clap",
         "default",
+        "serve",
+        "search",
     ],
     crate_root = "src/main.rs",
     edition = "2021",
-    proc_macro_deps = all_crate_deps(proc_macro = True),
+    proc_macro_deps = all_crate_deps(
+        proc_macro = True,
+    ),
     version = "0.4.28",
-    deps = all_crate_deps(normal = True) + [
+    deps = all_crate_deps(
+        build = True,
+        normal = True,
+        proc_macro = True,
+    ) + [
         ":mdbook",
+        "@crate_index_cargo_mdbook//:anyhow",
+        "@crate_index_cargo_mdbook//:chrono",
+        "@crate_index_cargo_mdbook//:clap",
+        "@crate_index_cargo_mdbook//:clap_complete",
+        "@crate_index_cargo_mdbook//:env_logger",
+        "@crate_index_cargo_mdbook//:opener",
     ],
 )
 
@@ -37,57 +49,38 @@ rust_library(
         normal = True,
         proc_macro = True,
     ),
+    compile_data = glob(["**"]),
     crate_features = [
-    #     "application",
-    #     "clap",
         "default",
+        "serve",
+        "search",
     ],
     edition = "2021",
     proc_macro_deps = all_crate_deps(proc_macro = True),
     version = "0.4.28",
-    deps = all_crate_deps(normal = True) + [
-        ":build-script-build",
+    deps = all_crate_deps(
+        build = True,
+        normal = True,
+        proc_macro = True,
+    ) + [
+        "@crate_index_cargo_mdbook//:ammonia",
+        "@crate_index_cargo_mdbook//:anyhow",
+        "@crate_index_cargo_mdbook//:chrono",
+        "@crate_index_cargo_mdbook//:clap",
+        "@crate_index_cargo_mdbook//:clap_complete",
+        "@crate_index_cargo_mdbook//:elasticlunr-rs",
+        "@crate_index_cargo_mdbook//:handlebars",
+        "@crate_index_cargo_mdbook//:log",
+        "@crate_index_cargo_mdbook//:memchr",
+        "@crate_index_cargo_mdbook//:once_cell",
+        "@crate_index_cargo_mdbook//:opener",
+        "@crate_index_cargo_mdbook//:pulldown-cmark",
+        "@crate_index_cargo_mdbook//:regex",
+        "@crate_index_cargo_mdbook//:serde",
+        "@crate_index_cargo_mdbook//:serde_json",
+        "@crate_index_cargo_mdbook//:shlex",
+        "@crate_index_cargo_mdbook//:tempfile",
+        "@crate_index_cargo_mdbook//:toml",
+        "@crate_index_cargo_mdbook//:topological-sort",
     ],
 )
-
-cargo_build_script(
-    name = "build-script-build",
-    srcs = ["src/cmd/build.rs"],
-    aliases = aliases(build = True),
-    crate_features = [
-    #     "application",
-    #     "clap",
-        "default",
-    ],
-    crate_name = "build_script_build",
-    crate_root = "src/cmd/build.rs",
-    edition = "2021",
-    version = "0.4.28",
-)
-
-
-
-# From Rule_rust lift example
-# rust_binary(
-#     name = "mdbook_bin",
-#     srcs = glob(["src/**/*.rs"]),
-#     aliases = aliases(
-#         normal = True,
-#         proc_macro = True,
-#     ),
-#     crate_features = [
-#     #     "application",
-#     #     "clap",
-#         "default",
-#     ],
-#     edition = "2021",
-#     proc_macro_deps = all_crate_deps(proc_macro = True),
-#     version = "0.4.28",
-#     deps = all_crate_deps(proc_macro = True, build = True, normal = True) + 
-#     [
-#         "@crate_index_cargo_mdbook_deps//:clap_complete",
-#         "@crate_index_cargo_mdbook_deps//:anyhow",
-#         "@crate_index_cargo_mdbook_deps//:log",
-#     ],
-# )
-
